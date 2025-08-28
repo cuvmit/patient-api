@@ -1,27 +1,27 @@
-from flask import (
+from quart import (
     request,
     Blueprint,
     jsonify
 )
 from strands import Agent
-from cohort_builder.tools import CustomGrammar
-from utils import (
+from ..utils import (
     get_claude_sonnet_4,
     get_animals_index,
     get_ezyvet_species
 )
+from .tools import CustomGrammar
 
 cohort_builder_routes = Blueprint("cohort_builder", __name__)
 
 @cohort_builder_routes.post("/cohort-builder/query")
-def generate_custom_query():
+async def generate_custom_query():
     try:
-        prompt = request.get_json()["prompt"]
-        print(prompt)
+        data = await request.get_json()
+        prompt = data["prompt"]
 
         grammar = ""
-        with open("src/assets/QueryDSL.g4", "r") as fin:
-            grammar = fin.read()
+        async with await cohort_builder_routes.open_resource("../../assets/QueryDSL.g4") as fin:
+            grammar = await fin.read()
 
         SYSTEM_PROMPT = f"""
         You will be given a custom ANTLR grammar file which is used to query veterinary patient records.
@@ -48,13 +48,14 @@ def generate_custom_query():
 
         agent = Agent(
             model=get_claude_sonnet_4(),
-            system_prompt=SYSTEM_PROMPT
+            system_prompt=SYSTEM_PROMPT,
+            callback_handler=None
         )
 
-        agent(
+        await agent.invoke_async(
             f"Generate a custom grammar query based on the following prompt:\n{prompt}"
         )
-        res = agent.structured_output(CustomGrammar)
+        res = await agent.structured_output_async(CustomGrammar)
 
         return jsonify({
             "query": res.query,
@@ -62,4 +63,4 @@ def generate_custom_query():
         }), 200
     except Exception as e:
         print(f"Error generating query: {e}")
-        return jsonify({ "error": e }), 500
+        return jsonify({ "error": str(e) }), 500

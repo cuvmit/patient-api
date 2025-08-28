@@ -12,12 +12,16 @@ dependencies = [
     "pydantic (>=2.11.7,<3.0.0)",
     "opensearch-py (>=3.0.0,<4.0.0)",
     "flask (>=3.1.2,<4.0.0)",
-    "gevent (>=25.5.1,<26.0.0)"
+    "quart (>=0.20.0,<0.21.0)",
+    "boto3 (>=1.40.19,<2.0.0)",
+    "hypercorn (>=0.17.3,<0.18.0)"
 ]
 
 [tool.poetry]
 packages = [{include = "patient_api", from = "src"}]
 
+[tool.poetry.scripts]
+start = "patient_api:run"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

@@ -1,0 +1,16 @@
+name: sb
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-nodejs:
+    uses: cuvmit/actions/.github/workflows/build-and-deploy-general-api.yml@main
+    with:
+      webtier: sb
+    secrets:
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      k8s_token: ${{ secrets.K8S_TOKEN_SB }}
+      k8s_ca: ${{ secrets.K8S_CA_SB }}
+      k8s_api_host: ${{ secrets.K8S_API_HOST_SB }}

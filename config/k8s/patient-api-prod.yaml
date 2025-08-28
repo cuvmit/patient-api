@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient-api-prod-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: patient-api-prod
+  template:
+    metadata:
+      labels:
+        app: patient-api-prod
+    spec:
+      containers:
+        - name: patient-api-prod
+          image: 165158508528.dkr.ecr.us-east-1.amazonaws.com/patient-api:prod
+          command: ['poetry', 'run', start]
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: patient-api-prod
+  labels:
+    app: patient-api
+spec:
+  selector:
+    app: patient-api-prod
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8080
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: patient-api-prod-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    - host: api-eks-prod.vmit.cucloud.net
+      http:
+        paths:
+          - path: /patient-api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: patient-api-prod
+                port:
+                  number: 80
+  ingressClassName: nginx

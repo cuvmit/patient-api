@@ -1,0 +1,18 @@
+name: prod
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-nodejs:
+    uses: cuvmit/actions/.github/workflows/build-and-deploy-general-api.yml@main
+    with:
+      webtier: prod
+    secrets:
+      aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      k8s_token: ${{ secrets.K8S_TOKEN_PROD }}
+      k8s_ca: ${{ secrets.K8S_CA_PROD }}
+      k8s_api_host: ${{ secrets.K8S_API_HOST_PROD }}

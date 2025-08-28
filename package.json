@@ -1,0 +1,12 @@
+{
+  "name": "patient-api",
+  "version": "0.1.0",
+  "description": "Python Quart REST API built to provide endpoints related to Ezyvet patient records. ",
+  "main": "index.js",
+  "repository": "https://github.com/cuvmit/patient-api.git",
+  "author": "Samuel Whittenberger <sbw79@cornell.edu>",
+  "license": "MIT",
+  "scripts": {
+    "start": "poetry run start"
+  }
+}
